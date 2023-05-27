@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>生日祝福</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style type="text/css">
+		body {
+			background-color: #000;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+		#fireworks {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			z-index: -1;
+		}
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 20px;
+			color: #FFF;
+			text-align: center;
+		}
+		h1 {
+			font-size: 48px;
+			margin-bottom: 30px;
+			color: #FFF;
+		}
+		p {
+			margin-bottom: 20px;
+			line-height: 1.5;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="fireworks"></canvas>
+	<div class="container">
+		<h1>生日快乐！</h1>
+		<p>亲爱的赵林玥同学：</p>
+		<p>今天是你的生日，我想送上最真挚的祝福和最诚挚的祝福。</p>
+		<p>愿你在新的一岁里，身体健康，家庭幸福，事业有成。</p>
+		<p>同时也希望你能够保持好心情，积极向上，勇于追求自己的梦想，不断进步。</p>
+		<p>最后，祝你生日快乐！</p>
+		<p>祝你每天都能过得开心，每天都有好心情，每天都能够收获幸福！</p>
+		<p>再次祝你生日快乐！</p>
+		<p>此致</p>
+		<p>敬礼！</p>
+	</div>
+	
+	<script type="text/javascript">
+		// 烟花背景
+		var canvas = document.getElementById('fireworks');
+		var ctx = canvas.getContext('2d');
+		var cw = canvas.width = window.innerWidth;
+		var ch = canvas.height = window.innerHeight;
+		var fireworks = [];
+		var particles = [];
+
+		function Firework() {
+			this.x = Math.random() * cw;
+			this.y = ch;
+			this.vx = Math.random() * 6 - 3;
+			this.vy = Math.random() * -12 - 6;
+			this.gravity = 0.3;
+			this.color = '#' + ((1 << 24) * Math.random() | 0).toString(16);
+			this.explosionRadius = Math.random() * 90 + 30;
+			this.particles = [];
+
+			this.update = function() {
+				if (this.vy < 0) {
+					for (var i = 0; i < 5; i++) {
+						this.particles.push(new Particle(this.x, this.y, this.color));
+					}
+				}
+
+				this.x += this.vx;
+				this.y += this.vy;
+				this.vy += this.gravity;
+				if (this.y <= ch - this.explosionRadius) {
+					for (var i = 0; i < 50; i++) {
+						particles.push(new Particle(this.x, this.y, this.color));
+					}
+					fireworks.splice(fireworks.indexOf(this), 1);
+				}
+			}
+
+			this.draw = function() {
+				ctx.beginPath();
+				ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+				ctx.fillStyle = this.color;
+				ctx.fill();
+			}
+		}
+
+		function Particle(x, y, color) {
+			this.x = x;
+			this.y = y;
+			this.vx = Math.random() * 6 - 3;
+			this.vy = Math.random() * 6 - 3;
+			this.gravity = 0.3;
+			this.color = color;
+			this.alpha = 1;
+			this.decay = Math.random() * 0.05 + 0.01;
+
+			this.update = function() {
+				this.x += this.vx;
+				this.y += this.vy;
+				this.vy += this.gravity;
+				this.alpha -= this.decay;
+				if (this.alpha <= 0) {
+					particles.splice(particles.indexOf(this), 1);
+				}
+			}
+
+			this.draw = function() {
+				ctx.beginPath();
+				ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+				ctx.fillStyle = this.color;
+				ctx.globalAlpha = this.alpha;
+				ctx.fill();
+			}
+		}
+
+		function loop() {
+			ctx.clearRect(0, 0, cw, ch);
+
+			if (Math.random() < 0.03) {
+				fireworks.push(new Firework());
+			}
+
+			for (var i = 0; i < fireworks.length; i++) {
+				fireworks[i].update();
+				fireworks[i].draw();
+			}
+
+			for (var i = 0; i < particles.length; i++) {
+				particles[i].update();
+				particles[i].draw();
+			}
+
+			requestAnimationFrame(loop);
+		}
+
+		loop();
+	</script>
+</body>
+</html>
